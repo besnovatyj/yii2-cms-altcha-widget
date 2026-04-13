@@ -1,0 +1,48 @@
+{
+  "name": "besnovatyj/yii2-cms-altcha-widget",
+  "description": "ALTCHA для Yii2 CMS",
+  "version": "1.0.0",
+  "type": "yii2-extension",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Besnovatyj",
+      "email": "your-email@example.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "extra": {
+    "moduleClass": "Besnovatyj\\Altcha\\Module",
+    "moduleId": "Altcha",
+    "bootstrap": "Besnovatyj\\Altcha\\Bootstrap"
+  },
+  "keywords": [
+    "yii2",
+    "ALTCHA",
+    "widget",
+    "cms"
+  ],
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true
+    },
+    "fxp-asset": {
+      "enabled": false
+    }
+  },
+  "require": {
+    "php": ">=8.4",
+    "altcha-org/altcha": "^1.3.1",
+    "yiisoft/yii2": "~2.0.0",
+    "yiisoft/yii2-bootstrap5": "~2.0.0"
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-latest"
+  },
+  "autoload": {
+    "psr-4": {
+      "Besnovatyj\\Altcha\\": "src/"
+    }
+  }
+}
