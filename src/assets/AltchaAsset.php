@@ -6,35 +6,23 @@ namespace Besnovatyj\Altcha\assets;
 
 use yii\web\AssetBundle;
 
+/**
+ * Asset-бандл AltchaManager.
+ *
+ * Бандл собирается командой:
+ *   cd assets && npm install && npm run build
+ *
+ * Включает только AltchaManager (window.yii2Altcha) для reset() и Bootstrap-модалок.
+ * Сам altcha web component подключается через зависимость AltchaVendorAsset.
+ */
 final class AltchaAsset extends AssetBundle
 {
+    /** Бандл собирается в assets/dist/js/ через npm run build */
+    public $sourcePath = __DIR__ . '/../../assets/dist/js';
 
-    public $sourcePath = __DIR__ . '/media';
+    /** @var string[] */
+    public $js = ['altcha-manager.js'];
 
-    /**
-     * По документации ALTCHA можно подключать через CDN:
-     * https://cdn.jsdelivr.net/gh/altcha-org/altcha/dist/altcha.min.js
-     */
-    public bool $useCdn = false;
-
-    /** Если self-host */
-    public string $localUrl = 'altcha.min.js';
-
-    public function init(): void
-    {
-        parent::init();
-
-        $url = $this->useCdn
-            ? 'https://cdn.jsdelivr.net/gh/altcha-org/altcha/dist/altcha.min.js'
-            : $this->localUrl;
-
-        $this->js = [$url];
-
-        // ALTCHA скрипт — ES module.
-        $this->jsOptions = [
-            'type' => 'module',
-            'async' => true,
-            'defer' => true,
-        ];
-    }
+    /** @var string[] */
+    public $depends = [AltchaVendorAsset::class];
 }
