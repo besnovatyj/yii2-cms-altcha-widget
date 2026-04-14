@@ -9,6 +9,20 @@ class Module extends BaseModule
     public const bool EDITABLE = true;
     public const string VERSION = '1.0.0';
 
+    /**
+     * Переключает namespace контроллеров на фронтенд при работе в app-frontend.
+     * Паттерн аналогичен Contact\Module::init().
+     *
+     * {@inheritdoc}
+     */
+    public function init(): void
+    {
+        parent::init();
+        if (\Yii::$app->id === 'app-frontend') {
+            $this->controllerNamespace = 'Besnovatyj\\Altcha\\controllers\\frontend';
+        }
+    }
+
     public static function getAdminMenu(): array
     {
         return require __DIR__ . '/config/adminMenu.php';
