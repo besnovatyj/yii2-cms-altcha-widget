@@ -6,24 +6,93 @@ namespace Besnovatyj\Altcha\widgets;
 
 use Besnovatyj\Altcha\assets\AltchaAsset;
 use Yii;
+use yii\base\Model;
 use yii\base\Widget;
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\helpers\Url;
+use yii\web\View;
 
+/**
+ * Виджет ALTCHA (proof-of-work captcha) для встраивания в формы.
+ *
+ * ## Использование с Yii2 ActiveForm (model/attribute)
+ *
+ * ```php
+ * echo AltchaWidget::widget([
+ *     'model'     => $form,
+ *     'attribute' => 'altcha',
+ * ]);
+ * ```
+ *
+ * ## Использование с Bootstrap-модалкой (авто-сброс при закрытии)
+ *
+ * ```php
+ * echo AltchaWidget::widget([
+ *     'model'     => $form,
+ *     'attribute' => 'altcha',
+ *     'modalId'   => 'contact-modal',
+ * ]);
+ * ```
+ *
+ * ## Прямое использование (без модели)
+ *
+ * ```php
+ * echo AltchaWidget::widget([
+ *     'challengeUrl' => Url::to(['/Altcha/altcha-challenge/challenge']),
+ * ]);
+ * ```
+ */
 final class AltchaWidget extends Widget
 {
-    /** Абсолютный или относительный URL endpoint'а, который отдаёт challenge JSON. */
-    public string $challengeUrl;
+    /**
+     * Абсолютный или относительный URL endpoint'а, который отдаёт challenge JSON.
+     * По умолчанию: /Altcha/altcha-challenge/challenge (фронтенд-контроллер модуля).
+     *
+     * Соответствует атрибуту challenge="" у <altcha-widget> (ALTCHA v3+).
+     * В ALTCHA v2 и ниже атрибут назывался challengeurl="".
+     */
+    public string $challengeUrl = '';
 
-    /** Имя поля, которое уйдёт в POST (по умолчанию altcha). */
+    /**
+     * Имя поля формы (атрибут name у <altcha-widget>).
+     * Игнорируется, если заданы $model и $attribute — name вычисляется автоматически.
+     */
     public string $name = 'altcha';
 
-    /** Любые дополнительные атрибуты <altcha-widget> (например, floating, hidefooter и т.п.). */
+    /**
+     * Модель формы для автоматического вычисления атрибута name по Yii2-конвенции.
+     * Используется совместно с $attribute.
+     */
+    public ?Model $model = null;
+
+    /**
+     * Атрибут модели (имя поля).
+     * Используется совместно с $model для вычисления name = ModelClass[attribute].
+     */
+    public ?string $attribute = null;
+
+    /**
+     * ID Bootstrap-модалки, при закрытии которой виджет авто-сбрасывается.
+     * Позволяет использовать форму повторно без устаревшего challenge.
+     *
+     * ```php
+     * 'modalId' => 'contact-modal'
+     * ```
+     */
+    public ?string $modalId = null;
+
+    /**
+     * Любые дополнительные атрибуты <altcha-widget>
+     * (например, floating, hidefooter, hidelogo и т.п.).
+     *
+     * @see https://altcha.org/docs/v2/widget-integration/
+     */
     public array $options = [];
 
-    /** Использовать CDN (true) или self-host (false) для altcha.min.js */
-    public bool $useCdn = false;
-
+    /**
+     * {@inheritdoc}
+     */
     public function init(): void
     {
         parent::init();
@@ -32,20 +101,45 @@ final class AltchaWidget extends Widget
         Yii::$app->getModule('Altcha');
     }
 
+    /**
+     * Рендерит <altcha-widget> и регистрирует JS-бандл.
+     *
+     * {@inheritdoc}
+     */
     public function run(): string
     {
-        $asset = new AltchaAsset();
-        $asset->useCdn = $this->useCdn;
-        $asset::register($this->view);
+        AltchaAsset::register($this->view);
 
-        $this->challengeUrl = $this->challengeUrl ?? Url::to(['/Altcha/backend/altcha/challenge'], true);
+        // Вычисляем name из model/attribute по Yii2-конвенции (напр. MessageForm[altcha])
+        if ($this->model !== null && $this->attribute !== null) {
+            $this->name = Html::getInputName($this->model, $this->attribute);
+        }
 
+        // Дефолтный URL — фронтенд-контроллер модуля
+        if ($this->challengeUrl === '') {
+            $this->challengeUrl = Url::to(['/Altcha/altcha-challenge/challenge']);
+        }
+
+        // Если задан modalId — регистрируем JS для авто-сброса при закрытии модалки
+        if ($this->modalId !== null) {
+            $containerId = $this->getId();
+            $this->options['id'] = $containerId;
+
+            $this->view->registerJs(
+                'window.yii2Altcha.attachModalReset(' .
+                Json::encode($this->modalId) . ',' .
+                Json::encode($containerId) . ');',
+                View::POS_READY
+            );
+        }
+
+        // ALTCHA v3+: атрибут называется 'challenge' (в v2 был 'challengeurl')
         $attrs = array_merge($this->options, [
-            'challengeurl' => $this->challengeUrl,
-            'name' => $this->name,
+            'challenge' => $this->challengeUrl,
+            'name'      => $this->name,
         ]);
 
-        // Сам web component, встраивается прямо внутрь формы.
+        // Сам web component встраивается прямо внутрь формы.
         return Html::tag('altcha-widget', '', $attrs);
     }
 }
