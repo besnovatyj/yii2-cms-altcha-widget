@@ -14,7 +14,7 @@ class Bootstrap implements BootstrapInterface
     {
         $container = \Yii::$container;
 
-        // TODO Если разделять настройки фронтэнда и бэкэнда, то в раздел definitions и динамические настройки?
+        // TODO Если разделять настройки фронтэнда и бэкэнда, то `set` вместо `setSingleton` и динамические настройки?
         $container->setSingleton(AltchaConfig::class,
             function () use ($app) {
                 return new AltchaConfig(
