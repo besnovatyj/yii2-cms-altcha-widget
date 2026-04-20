@@ -1,33 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Besnovatyj\Altcha\controllers\backend;
 
 use Besnovatyj\Altcha\contracts\AltchaServiceInterface;
-
 use Yii;
+use yii\filters\HttpCache;
+use yii\web\Controller;
 use yii\web\Response;
 
-class AltchaController extends \yii\web\Controller
+class AltchaChallengeController extends Controller
 {
-    public AltchaServiceInterface $service;
 
-    public function __construct($id, $module, AltchaServiceInterface $service, $config = [])
-    {
+    public function __construct(
+        $id,
+        $module,
+        private readonly AltchaServiceInterface $service,
+        array $config = []
+    ) {
         parent::__construct($id, $module, $config);
-        $this->service = $service;
     }
 
     public function behaviors(): array
     {
         return [
             [
-                'class' => \yii\filters\HttpCache::class,
+                'class' => HttpCache::class,
                 'only' => ['challenge'],
                 'cacheControlHeader' => 'no-store, no-cache, must-revalidate, max-age=0',
             ],
         ];
     }
 
+    /**
+     * Возвращает новый ALTCHA challenge в формате JSON.
+     *
+     * @return array
+     */
     public function actionChallenge(): array
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
