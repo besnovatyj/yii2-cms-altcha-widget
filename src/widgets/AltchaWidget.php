@@ -85,7 +85,15 @@ final class AltchaWidget extends Widget
     /**
      * Любые дополнительные атрибуты <altcha-widget>
      * (например, floating, hidefooter, hidelogo и т.п.).
-     *
+     * ```php
+     *  \Besnovatyj\Altcha\widgets\AltchaWidget::widget([
+     * 'name' => 'altcha',
+     * 'challengeUrl' => \yii\helpers\Url::to(['/Altcha/backend/altcha-challenge/challenge']),
+     * 'options' => [ // сюда можно класть любые атрибуты <altcha-widget>
+     * 'hidefooter' => true,
+     * ],
+     * ]);
+     * ```
      * @see https://altcha.org/docs/v2/widget-integration/
      */
     public array $options = [];
@@ -136,7 +144,7 @@ final class AltchaWidget extends Widget
         // ALTCHA v3+: атрибут называется 'challenge' (в v2 был 'challengeurl')
         $attrs = array_merge($this->options, [
             'challenge' => $this->challengeUrl,
-            'name'      => $this->name,
+            'name' => $this->name,
         ]);
 
         // Сам web component встраивается прямо внутрь формы.
