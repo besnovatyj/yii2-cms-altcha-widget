@@ -5,7 +5,7 @@ namespace Besnovatyj\Altcha;
 use Besnovatyj\Altcha\config\AltchaConfig;
 use Besnovatyj\Altcha\contracts\AltchaServiceInterface;
 use Besnovatyj\Altcha\services\AltchaService;
-use common\components\SecretReader;
+use Besnovatyj\Helpers\SecretReader;
 use yii\base\BootstrapInterface;
 
 class Bootstrap implements BootstrapInterface
