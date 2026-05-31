@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2026 Besnovatyj. Licensed under the MIT License.
+ */
+
 // altcha web component подключается отдельно через AltchaVendorAsset (локальный файл, без CDN).
 // Этот бандл содержит только AltchaManager — утилитный слой поверх <altcha-widget>.
 

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2026 Besnovatyj. Licensed under the MIT License.
+ */
+
 import type { AltchaWidgetElement } from './types';
 
 /**

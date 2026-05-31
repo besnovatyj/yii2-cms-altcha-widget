@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2026 Besnovatyj. Licensed under the MIT License.
+ */
+
 /**
  * ESBuild configuration for ALTCHA Yii2 widget
  *
