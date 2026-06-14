@@ -1,32 +1,25 @@
 <?php
 
-
 /*
  * Copyright (c) 2026 Besnovatyj. Licensed under the MIT License.
  */
 
 namespace Besnovatyj\Altcha;
 
-use common\components\module\BaseModule;
+use common\components\module\CmsModule;
+use modules\modmanNew\contract\DeclaresModule;
+use modules\modmanNew\contract\ProvidesAdminMenu;
 
-class Module extends BaseModule
+class Module extends CmsModule implements
+    DeclaresModule, ProvidesAdminMenu
 {
     public const bool EDITABLE = true;
     public const string VERSION = '1.0.0';
-
-    public static function getAdminMenu(): array
-    {
-        return require __DIR__ . '/config/adminMenu.php';
-    }
-
-    public static function getConfig(): array
-    {
-        return require __DIR__ . '/config/config.php';
-    }
-
-    public static function getOptions(): array
-    {
-        return [];
-    }
+    public const string MODULE_ID = 'Altcha';
+    public static function moduleId(): string { return self::MODULE_ID; }
+    public static function moduleVersion(): string { return self::VERSION; }
+    public static function isEditable(): bool { return self::EDITABLE; }
+    public static function adminMenu(): array { return require __DIR__.'/config/adminMenu.php'; }
+    public static function moduleConfig(): array { return require __DIR__.'/config/config.php'; }
 
 }

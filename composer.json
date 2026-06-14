@@ -14,7 +14,8 @@
   "extra": {
     "moduleClass": "Besnovatyj\\Altcha\\Module",
     "moduleId": "Altcha",
-    "bootstrap": "Besnovatyj\\Altcha\\Bootstrap"
+    "bootstrap": "Besnovatyj\\Altcha\\Bootstrap",
+    "bescms": { "kind": "module" }
   },
   "keywords": [
     "yii2",
