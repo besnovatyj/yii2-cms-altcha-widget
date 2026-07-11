@@ -14,7 +14,11 @@
     "moduleClass": "Besnovatyj\\Altcha\\Module",
     "moduleId": "Altcha",
     "bootstrap": "Besnovatyj\\Altcha\\Bootstrap",
-    "bescms": { "kind": "module" }
+    "bescms": { "kind": "module" },
+    "config-plugin": {
+      "common": "src/config/common.php",
+      "app-backend": "src/config/backend.php"
+    }
   },
   "keywords": [
     "yii2",
