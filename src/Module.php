@@ -9,9 +9,10 @@ namespace Besnovatyj\Altcha;
 use Besnovatyj\Kernel\module\CmsModule;
 use Besnovatyj\Contracts\module\DeclaresModule;
 use Besnovatyj\Contracts\module\ProvidesAdminMenu;
+use Besnovatyj\Contracts\module\ProvidesAppConfig;
 
 class Module extends CmsModule implements
-    DeclaresModule, ProvidesAdminMenu
+    DeclaresModule, ProvidesAdminMenu, ProvidesAppConfig
 {
     public const bool EDITABLE = true;
     public const string VERSION = '1.0.0';
@@ -22,4 +23,20 @@ class Module extends CmsModule implements
     public static function adminMenu(): array { return require __DIR__.'/config/adminMenu.php'; }
     public static function moduleConfig(): array { return require __DIR__.'/config/config.php'; }
 
+    /**
+     * Роут выдачи challenge нужен гостю на странице входа бэкенда (altcha на форме логина), поэтому
+     * модуль сам добавляет его в whitelist ядрового гейта — ядру знать про Altcha не нужно.
+     */
+    public static function appConfig(): array
+    {
+        return [
+            'app-backend' => [
+                'as access' => [
+                    'allowActions' => [
+                        'Altcha/backend/altcha-challenge/challenge',
+                    ],
+                ],
+            ],
+        ];
+    }
 }
