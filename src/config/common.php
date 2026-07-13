@@ -11,7 +11,8 @@ use Besnovatyj\Altcha\Module;
 /**
  * Yii2-конфиг модуля для движка yiisoft/config (группа `common` — общий для всех приложений).
  *
- * Регистрация модуля. Пер-аппликационный вклад (whitelist challenge-роута) — в config/backend.php.
+ * Регистрация модуля + bootstrap-классы (L2 — выполняются только у активного модуля, гейт modman).
+ * Пер-аппликационный вклад (whitelist challenge-роута) — в config/backend.php.
  * Меню и миграции остаются вкладами modman. Значения — из статических методов {@see Module}.
  */
 return [
@@ -22,4 +23,5 @@ return [
             ['version' => Module::moduleVersion()],
         ),
     ],
+    'bootstrap' => array_values(Module::bootstrapClasses()),
 ];
