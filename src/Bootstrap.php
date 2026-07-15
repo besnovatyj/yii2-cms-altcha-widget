@@ -23,7 +23,7 @@ class Bootstrap implements BootstrapInterface
         $container->setSingleton(AltchaConfig::class,
             function () use ($app) {
                 return new AltchaConfig(
-                    hmacKey: SecretReader::get('altcha_hmac_key'),
+                    hmacKey: SecretReader::get('ALTCHA_HMAC_KEY'),
                     maxNumber: 50000,
                     expiresSeconds: 120,
                     replayTtlSeconds: 600,
