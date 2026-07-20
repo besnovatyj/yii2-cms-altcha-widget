@@ -26,4 +26,16 @@ final class AltchaVendorAsset extends AssetBundle
 
     /** @var string[] */
     public $js = ['altcha.min.js'];
+
+    /**
+     * altcha.min.js — это ES-модуль (у него нет IIFE-обёртки, верхнеуровневые
+     * переменные модульно изолированы). При подключении обычным <script> его
+     * `var e,t,n,...` (в т.ч. t = Array.prototype.indexOf) утекают в window и
+     * затираются легаси-скриптами страницы, из-за чего Svelte-рантайм падает
+     * с "t.call is not a function". Грузим как модуль — тогда область видимости
+     * изолирована и коллизии глобалей нет.
+     *
+     * @var array<string, string>
+     */
+    public $jsOptions = ['type' => 'module'];
 }
