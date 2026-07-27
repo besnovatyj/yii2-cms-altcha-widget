@@ -88,20 +88,44 @@ final class AltchaWidget extends Widget
     public ?string $modalId = null;
 
     /**
-     * Любые дополнительные атрибуты <altcha-widget>
-     * (например, floating, hidefooter, hidelogo и т.п.).
+     * Дополнительные опции виджета ALTCHA.
+     *
+     * ВАЖНО (ALTCHA v3): web component читает напрямую с тега только «отражённые»
+     * атрибуты — auto, challenge, configuration, display, language, name, theme,
+     * type, workers. Все прочие опции конфигурации (hideFooter, hideLogo,
+     * floatingPlacement и т.п.) как отдельные атрибуты игнорируются и должны
+     * передаваться единым JSON-атрибутом configuration. Виджет делает это сам:
+     * отражённые опции уходят атрибутами, остальные пакуются в configuration.
+     *
+     * Ключи опций конфигурации — в camelCase, как их называет ALTCHA
+     * (hideFooter, hideLogo, а НЕ hidefooter/hidelogo).
+     *
      * ```php
      *  \Besnovatyj\Altcha\widgets\AltchaWidget::widget([
      * 'name' => 'altcha',
      * 'challengeUrl' => \yii\helpers\Url::to(['/Altcha/backend/altcha-challenge/challenge']),
-     * 'options' => [ // сюда можно класть любые атрибуты <altcha-widget>
-     * 'hidefooter' => true,
+     * 'options' => [ // сюда можно класть любые опции <altcha-widget>
+     * 'hideFooter' => true,
+     * 'hideLogo' => true,
      * ],
      * ]);
      * ```
      * @see https://altcha.org/docs/v2/widget-integration/
      */
     public array $options = [];
+
+    /**
+     * Атрибуты, которые ALTCHA v3 отражает напрямую с тега <altcha-widget>.
+     * Остальные опции web component берёт только из JSON-атрибута configuration.
+     * Дополнены стандартными DOM-атрибутами, которые должны остаться на теге.
+     *
+     * @var string[]
+     */
+    private const REFLECTED_ATTRS = [
+        'auto', 'challenge', 'configuration', 'display', 'language',
+        'name', 'theme', 'type', 'workers',
+        'id', 'class', 'style',
+    ];
 
     /**
      * {@inheritdoc}
@@ -146,13 +170,42 @@ final class AltchaWidget extends Widget
             );
         }
 
+        // Разносим опции: отражённые ALTCHA'ой атрибуты — на тег, остальные — в configuration.
+        [$attrs, $config] = $this->splitOptions($this->options);
+
         // ALTCHA v3+: атрибут называется 'challenge' (в v2 был 'challengeurl')
-        $attrs = array_merge($this->options, [
-            'challenge' => $this->challengeUrl,
-            'name' => $this->name,
-        ]);
+        $attrs['challenge'] = $this->challengeUrl;
+        $attrs['name'] = $this->name;
+
+        // Прочие опции конфигурации v3 принимает только единым JSON-атрибутом.
+        if ($config !== []) {
+            $attrs['configuration'] = Json::encode($config);
+        }
 
         // Сам web component встраивается прямо внутрь формы.
         return Html::tag('altcha-widget', '', $attrs);
+    }
+
+    /**
+     * Делит опции на атрибуты тега (отражаемые ALTCHA v3) и конфигурацию
+     * для JSON-атрибута configuration.
+     *
+     * @param array<string, mixed> $options
+     * @return array{0: array<string, mixed>, 1: array<string, mixed>} [$attrs, $config]
+     */
+    private function splitOptions(array $options): array
+    {
+        $attrs = [];
+        $config = [];
+
+        foreach ($options as $key => $value) {
+            if (in_array(strtolower((string)$key), self::REFLECTED_ATTRS, true)) {
+                $attrs[$key] = $value;
+            } else {
+                $config[$key] = $value;
+            }
+        }
+
+        return [$attrs, $config];
     }
 }
