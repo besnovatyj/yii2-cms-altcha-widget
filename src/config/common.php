@@ -13,7 +13,8 @@ use Besnovatyj\Altcha\Module;
  *
  * Регистрация модуля + bootstrap-классы (L2 — выполняются только у активного модуля, гейт modman).
  * Пер-аппликационный вклад (whitelist challenge-роута) — в config/backend.php.
- * Меню и миграции остаются вкладами modman. Значения — из статических методов {@see Module}.
+ * Меню админки — `adminMenu.php` (группа `admin-menu`), миграции — вклад modman.
+ * Значения — из статических методов {@see Module}.
  */
 return [
     'modules' => [
